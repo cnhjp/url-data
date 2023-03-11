@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>url data</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/lz-string/1.4.4/lz-string.js"></script>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <textarea id="code" rows="10" resize="y"></textarea>
+
+    <script>
+      window.onload = () => {
+        // 从url的hash中获取code参数，解压后填充到code文本框中，哈希值以code/开头
+        const codeEl = document.getElementById("code");
+        if (!codeEl) return;
+        const hashStr = window.location.hash;
+        if (hashStr.startsWith("#code/")) {
+          const codeStr = hashStr.slice(6);
+          const code = LZString.decompressFromEncodedURIComponent(codeStr);
+          codeEl.value = code;
+        }
+        // 监听code文本框的ctrl+s事件，将文本框中的内容压缩后修改url后面的hash参数，然后复制url到剪贴板
+        codeEl.addEventListener("keydown", (e) => {
+          if (e.ctrlKey && e.key === "s") {
+            e.preventDefault();
+            const code = codeEl.value;
+            const codeStr = LZString.compressToEncodedURIComponent(code);
+            window.location.hash = `code/${codeStr}`;
+            navigator.clipboard.writeText(window.location.href);
+            alert("已复制到剪贴板");
+          }
+        });
+      };
+    </script>
+  </body>
+</html>
